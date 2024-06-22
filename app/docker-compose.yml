@@ -1,9 +1,0 @@
-version: '3.3'
-services:
-  flask:
-    container_name: sleepyBot
-    volumes:
-      - ./src:/app
-    build: .
-    ports:
-      - "8001:5000"
