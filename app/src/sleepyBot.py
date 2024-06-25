@@ -17,15 +17,17 @@ bot = discord.Bot()
 async def on_ready():
     print(f'{bot.user} is now running!')
 
-# Define a slash command named "test-slash" with a description
+# Define a slash command with a description
 @bot.slash_command(
-    name="test-slash",
-    description="Test command to receive a file"
+    name="test-slash",  # Updated command name
+    description="Upload a zip file of images to be turned into cards"
 )
-# Handler for the "test-slash" command, which accepts a file attachment
-async def test_slash(interaction: discord.Interaction, file: discord.Attachment):
+async def upload_card_images(interaction: discord.Interaction, file: discord.Attachment):
+    # Save the file to the current directory
+    await file.save(file.filename)
+
     # Respond to the interaction with a message confirming the received file
-    await interaction.response.send_message(f"Received file: {file.filename}")
+    await interaction.response.send_message(f"Received and saved file: {file.filename}")
 
 # Event handler for when a message is sent in any channel the bot has access to
 @bot.event
