@@ -5,14 +5,16 @@ import disnake as discord
 from disnake.ext import commands
 
 from utils import sleepyMessages
+from services import makeCards
 
-# Load environment variables from a .env file
+# the .env file must be in the same directory as this script
 load_dotenv('.env')
-# Retrieve the Discord bot token from the environment variables
+# go to the bot panel in the discord dev portal to get this token, store it securely
 TOKEN = os.getenv('DISCORD_TOKEN')
-
-# Initialize a new instance of the Discord bot
-bot = commands.Bot(command_prefix='/')
+# This integer indicates which permissions the bot has, generated from the dev portal
+INTENTS_INT = int(os.getenv('PERMISSION_INT'))
+bot_intents = discord.Intents(value=INTENTS_INT)
+bot = commands.Bot(command_prefix='/',intents=bot_intents)
 
 # Event handler for when the bot has successfully connected and is ready
 @bot.event
@@ -21,24 +23,26 @@ async def on_ready():
 
 # Define a slash command with a description
 @bot.slash_command(
-    name="upload-pics",  # Updated command name
+    name="upload-pics",  # If this is not specified, the function name will be the slash command name
     description="Upload a zip file of images to be turned into cards"
 )
 async def upload_card_images(interaction: discord.ApplicationCommandInteraction, file: discord.Attachment):
-    # Save the file to the current directory
-    await file.save(file.filename)
-
+    # Replace this stuff with a call to the cardMaker API so the response can be the resulting PDF
+    # PDF = await makeCards.send_zip(file)
+    PDF= await file.to_file(description="PDF generated from your images")
     # Respond to the interaction with a message confirming the received file
-    await interaction.response.send_message(f"Received and saved file: {file.filename}")
+    await interaction.response.send_message(content=f"Received and saved file: {file.filename}", file=PDF)
 
 # Event handler for when a message is sent in any channel the bot has access to
+# This is a stand in skeleton for adding little easter eggs or auto detection of people
+# struggling with using the bot. For now it just says a small greeting.
 @bot.event
 async def on_message(message):
     # Ignore messages sent by the bot itself to prevent infinite loops
     if message.author == bot.user:
         return
     
-    # Extract message author, content, and channel
+    # Use message objects to grab any necessary details
     username = str(message.author)
     user_msg = message.content
     channel = str(message.channel)
@@ -49,7 +53,6 @@ async def on_message(message):
     # Print the message details to the console for logging
     print(f'[{channel}] {username}: "{user_msg}"')
 
-# Main function to run the bot
 def main():
     bot.run(TOKEN)
 
