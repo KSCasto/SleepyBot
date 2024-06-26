@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
-import discord
+
+import disnake as discord
+from disnake.ext import commands
 
 from utils import sleepyMessages
 
@@ -10,7 +12,7 @@ load_dotenv('.env')
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 # Initialize a new instance of the Discord bot
-bot = discord.Bot()
+bot = commands.Bot(command_prefix='/')
 
 # Event handler for when the bot has successfully connected and is ready
 @bot.event
@@ -19,10 +21,10 @@ async def on_ready():
 
 # Define a slash command with a description
 @bot.slash_command(
-    name="test-slash",  # Updated command name
+    name="upload-pics",  # Updated command name
     description="Upload a zip file of images to be turned into cards"
 )
-async def upload_card_images(interaction: discord.Interaction, file: discord.Attachment):
+async def upload_card_images(interaction: discord.ApplicationCommandInteraction, file: discord.Attachment):
     # Save the file to the current directory
     await file.save(file.filename)
 
