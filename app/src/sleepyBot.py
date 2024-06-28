@@ -16,22 +16,25 @@ INTENTS_INT = int(os.getenv('PERMISSION_INT'))
 bot_intents = discord.Intents(value=INTENTS_INT)
 bot = commands.Bot(command_prefix='/',intents=bot_intents)
 
-# Event handler for when the bot has successfully connected and is ready
 @bot.event
 async def on_ready():
     print(f'{bot.user} is now running!')
 
-# Define a slash command with a description
 @bot.slash_command(
     name="upload-pics",  # If this is not specified, the function name will be the slash command name
     description="Upload a zip file of images to be turned into cards"
 )
 async def upload_card_images(interaction: discord.ApplicationCommandInteraction, file: discord.Attachment):
     # Replace this stuff with a call to the cardMaker API so the response can be the resulting PDF
-    # PDF = await makeCards.send_zip(file)
-    PDF= await file.to_file(description="PDF generated from your images")
-    # Respond to the interaction with a message confirming the received file
-    await interaction.response.send_message(content=f"Received and saved file: {file.filename}", file=PDF)
+    # zip = await file.to_file(description="PDF generated from your images")
+    zip = await file.read()
+    try:
+        pdfBytes = await makeCards.send_zip(zip)
+        PDF = discord.File(pdfBytes, filename="output.pdf")
+        # Respond to the interaction with a message confirming the received file
+        await interaction.followup.send(content=f"Received and saved file: {file.filename}", file=PDF)
+    except:
+        await interaction.followup.send(content=f"Oops!")
 
 # Event handler for when a message is sent in any channel the bot has access to
 # This is a stand in skeleton for adding little easter eggs or auto detection of people
