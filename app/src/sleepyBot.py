@@ -25,14 +25,13 @@ async def on_ready():
     description="Upload a zip file of images to be turned into cards"
 )
 async def upload_card_images(interaction: discord.ApplicationCommandInteraction, file: discord.Attachment):
-    # Replace this stuff with a call to the cardMaker API so the response can be the resulting PDF
-    # zip = await file.to_file(description="PDF generated from your images")
+    await interaction.response.defer()
     zip = await file.read()
     try:
         pdfBytes = await makeCards.send_zip(zip)
         PDF = discord.File(pdfBytes, filename="output.pdf")
         # Respond to the interaction with a message confirming the received file
-        await interaction.followup.send(content=f"Received and saved file: {file.filename}", file=PDF)
+        await interaction.followup.send(content=f"Received and saved file", file=PDF)
     except:
         await interaction.followup.send(content=f"Oops!")
 
