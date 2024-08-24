@@ -10,10 +10,6 @@ async def send_zip(zipFile):
         "Authorization": "Bearer test_token"
     }
 
-    # files = {
-    #     "file": ("file.zip",zipFile,"application/zip")
-    # }
-
     data = aiohttp.FormData()
     data.add_field('file', zipFile, filename='file.zip', content_type='application/zip')
 
